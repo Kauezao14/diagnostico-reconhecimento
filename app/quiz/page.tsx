@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { PERGUNTAS, OPCOES_PADRAO, OPCOES_POR_PERGUNTA } from '@/lib/quiz';
+import { PERGUNTAS, OPCOES_PADRAO, OPCOES_POR_PERGUNTA, calcularResultado } from '@/lib/quiz';
 
 export default function QuizPage() {
   const router = useRouter();
@@ -29,22 +29,18 @@ export default function QuizPage() {
 
   async function finalizar() {
     setEnviando(true);
-    try {
-      const res = await fetch('/api/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nome, email, respostas }),
-      });
-      const data = await res.json();
-      if (data.resultado) {
-        sessionStorage.setItem('resultado', JSON.stringify(data.resultado));
-        router.push('/resultado');
-      }
-    } catch {
-      alert('Erro ao enviar. Tente novamente.');
-    } finally {
-      setEnviando(false);
-    }
+
+    // Calcula localmente e navega imediatamente — não depende do banco
+    const resultado = calcularResultado(respostas);
+    sessionStorage.setItem('resultado', JSON.stringify(resultado));
+    router.push('/resultado');
+
+    // Salva no banco em background (falha silenciosa)
+    fetch('/api/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome, email, respostas }),
+    }).catch(() => {});
   }
 
   if (etapa === 'dados') {
