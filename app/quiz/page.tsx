@@ -53,6 +53,7 @@ export default function QuizPage() {
   const [email, setEmail] = useState('');
   const [telefone, setTelefone] = useState('');
   const [empresaTamanho, setEmpresaTamanho] = useState('');
+  const [cargo, setCargo] = useState('');
   const [etapa, setEtapa] = useState<'dados' | 'quiz' | 'extras'>('dados');
   const [enviando, setEnviando] = useState(false);
   const [erros, setErros] = useState<{ email?: string; telefone?: string }>({});
@@ -109,7 +110,7 @@ export default function QuizPage() {
     fetch('/api/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nome, email, telefone, empresaTamanho, respostas, extras }),
+      body: JSON.stringify({ nome, email, telefone, cargo, empresaTamanho, respostas, extras }),
     }).catch(() => {});
   }
 
@@ -157,6 +158,17 @@ export default function QuizPage() {
                 className={`w-full bg-white/10 border rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none transition-colors ${erros.telefone ? 'border-red-500' : 'border-white/20 focus:border-amber-500'}`}
               />
               {erros.telefone && <p className="text-red-400 text-xs mt-1">{erros.telefone}</p>}
+            </div>
+
+            <div>
+              <label className="block text-slate-300 text-sm mb-2">Qual é o seu cargo? <span className="text-slate-500">(opcional)</span></label>
+              <input
+                type="text"
+                value={cargo}
+                onChange={(e) => setCargo(e.target.value)}
+                placeholder="Ex: Analista, Coordenador, Gerente..."
+                className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
+              />
             </div>
 
             <div>
