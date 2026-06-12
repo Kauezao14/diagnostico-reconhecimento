@@ -4,7 +4,7 @@ import { calcularResultado } from '@/lib/quiz';
 
 export async function POST(req: NextRequest) {
   try {
-    const { nome, email, respostas } = await req.json();
+    const { nome, email, telefone, respostas } = await req.json();
 
     if (!respostas || respostas.length !== 15) {
       return NextResponse.json({ error: 'Respostas inválidas' }, { status: 400 });
@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
         id SERIAL PRIMARY KEY,
         nome TEXT,
         email TEXT,
+        telefone TEXT,
         pontuacao INTEGER NOT NULL,
         perfil TEXT NOT NULL,
         visibilidade INTEGER NOT NULL,
@@ -30,8 +31,8 @@ export async function POST(req: NextRequest) {
     `;
 
     const [row] = await sql`
-      INSERT INTO resultados_quiz (nome, email, pontuacao, perfil, visibilidade, valor_percebido, influencia, relacionamento, respostas)
-      VALUES (${nome || null}, ${email || null}, ${resultado.pontuacao}, ${resultado.perfil},
+      INSERT INTO resultados_quiz (nome, email, telefone, pontuacao, perfil, visibilidade, valor_percebido, influencia, relacionamento, respostas)
+      VALUES (${nome || null}, ${email || null}, ${telefone || null}, ${resultado.pontuacao}, ${resultado.perfil},
               ${resultado.visibilidade}, ${resultado.valor}, ${resultado.influencia},
               ${resultado.relacionamento}, ${JSON.stringify(respostas)})
       RETURNING id

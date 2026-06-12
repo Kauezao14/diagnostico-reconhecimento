@@ -10,6 +10,7 @@ export default function QuizPage() {
   const [respostas, setRespostas] = useState<number[]>(Array(15).fill(0));
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
+  const [telefone, setTelefone] = useState('');
   const [etapa, setEtapa] = useState<'dados' | 'quiz'>('dados');
   const [enviando, setEnviando] = useState(false);
 
@@ -39,7 +40,7 @@ export default function QuizPage() {
     fetch('/api/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nome, email, respostas }),
+      body: JSON.stringify({ nome, email, telefone, respostas }),
     }).catch(() => {});
   }
 
@@ -70,6 +71,16 @@ export default function QuizPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="para@exemplo.com"
+                className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
+              />
+            </div>
+            <div>
+              <label className="block text-slate-300 text-sm mb-2">Seu WhatsApp <span className="text-slate-500">(opcional)</span></label>
+              <input
+                type="tel"
+                value={telefone}
+                onChange={(e) => setTelefone(e.target.value)}
+                placeholder="(11) 99999-9999"
                 className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
               />
             </div>
