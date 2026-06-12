@@ -3,42 +3,79 @@ import Image from 'next/image';
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4 py-12">
-      <div className="max-w-2xl w-full text-center space-y-8">
+    <main className="min-h-screen bg-[#0d1117] flex flex-col items-center">
 
-        {/* Logo / Branding */}
-        <div className="flex justify-center">
-          <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl px-6 py-3 shadow-lg shadow-amber-500/30">
-            <span className="text-slate-900 font-black text-2xl tracking-tight">DIAGNÓSTICO DE RECONHECIMENTO</span>
-          </div>
+      {/* Hero com imagem e overlay */}
+      <div className="relative w-full max-w-2xl">
+        <Image
+          src="/lucas-pensando.jpg"
+          alt="Lucas"
+          width={800}
+          height={600}
+          className="w-full object-cover h-[55vh] sm:h-[60vh]"
+          priority
+        />
+        {/* Gradient overlay bottom */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0d1117] via-[#0d1117]/40 to-transparent" />
+
+        {/* Badge no topo */}
+        <div className="absolute top-5 left-0 right-0 flex justify-center">
+          <span className="bg-amber-500 text-slate-900 font-black text-sm px-5 py-2 rounded-full shadow-lg shadow-amber-500/40 uppercase tracking-widest">
+            DIAGNÓSTICO DE RECONHECIMENTO
+          </span>
         </div>
+      </div>
 
-        {/* Foto do Lucas */}
-        <div className="rounded-2xl overflow-hidden border border-white/10 shadow-xl">
-          <Image src="/lucas-pensando.jpg" alt="Lucas" width={800} height={600} className="w-full object-cover max-h-[480px]" />
+      {/* Conteúdo abaixo */}
+      <div className="w-full max-w-2xl px-5 pb-12 -mt-2 space-y-7 text-center">
+
+        {/* Pill */}
+        <div className="flex justify-center">
+          <span className="inline-flex items-center gap-2 bg-white/5 border border-white/10 text-slate-300 text-sm px-4 py-2 rounded-full">
+            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+            Gratuito · Resultado em 2 minutos
+          </span>
         </div>
 
         {/* Headline */}
         <div className="space-y-4">
-          <span className="inline-block bg-amber-500/20 text-amber-400 text-sm font-semibold px-4 py-1.5 rounded-full border border-amber-500/30">
-            ⏱ 2 minutos · Gratuito
-          </span>
-          <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight">
-            Descubra em 2 minutos se você é{' '}
-            <span className="text-amber-400">valorizado</span> e como resolver isso na sua empresa!
+          <h1 className="text-4xl sm:text-5xl font-black text-white leading-[1.1] tracking-tight">
+            Descubra se você é{' '}
+            <span className="text-amber-400 relative">
+              valorizado
+            </span>
+            {' '}e como mudar isso agora!
           </h1>
-          <p className="text-lg text-slate-300 max-w-xl mx-auto">
-            Identifique os gargalos invisíveis que estão reduzindo sua percepção de valor profissional e receba um plano de ação personalizado.
+          <p className="text-slate-400 text-base sm:text-lg max-w-lg mx-auto leading-relaxed">
+            Identifique os gargalos invisíveis que estão reduzindo sua percepção de valor e receba um plano de ação personalizado.
           </p>
         </div>
 
         {/* CTA */}
-        <Link
-          href="/quiz"
-          className="inline-block w-full bg-amber-500 hover:bg-amber-400 text-slate-900 font-black text-xl px-10 py-5 rounded-xl transition-colors duration-200 shadow-lg shadow-amber-500/30 uppercase tracking-wide"
-        >
-          INICIAR →
-        </Link>
+        <div className="space-y-3">
+          <Link
+            href="/quiz"
+            className="group flex items-center justify-center gap-3 w-full bg-amber-500 hover:bg-amber-400 active:scale-[0.98] text-slate-900 font-black text-xl py-5 rounded-2xl transition-all duration-200 shadow-2xl shadow-amber-500/30 uppercase tracking-wide"
+          >
+            Iniciar diagnóstico
+            <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
+          </Link>
+          <p className="text-slate-600 text-xs">Sem cadastro. Resultado imediato.</p>
+        </div>
+
+        {/* Mini social proof */}
+        <div className="flex justify-center gap-6 pt-2">
+          {[
+            { valor: '15', desc: 'Perguntas' },
+            { valor: '4', desc: 'Dimensões' },
+            { valor: '2min', desc: 'Duração' },
+          ].map(({ valor, desc }) => (
+            <div key={desc} className="text-center">
+              <div className="text-amber-400 font-black text-xl">{valor}</div>
+              <div className="text-slate-500 text-xs">{desc}</div>
+            </div>
+          ))}
+        </div>
 
       </div>
     </main>
