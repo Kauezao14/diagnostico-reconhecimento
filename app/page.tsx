@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Home() {
   return (
@@ -10,6 +11,11 @@ export default function Home() {
           <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl px-6 py-3 shadow-lg shadow-amber-500/30">
             <span className="text-slate-900 font-black text-2xl tracking-tight">DIAGNÓSTICO DE RECONHECIMENTO</span>
           </div>
+        </div>
+
+        {/* Foto do Lucas */}
+        <div className="rounded-2xl overflow-hidden border border-white/10 shadow-xl">
+          <Image src="/lucas-pensando.jpg" alt="Lucas" width={800} height={450} className="w-full object-cover max-h-72" />
         </div>
 
         {/* Headline */}
