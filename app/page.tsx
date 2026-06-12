@@ -52,30 +52,13 @@ export default function Home() {
         </div>
 
         {/* CTA */}
-        <div className="space-y-3">
-          <Link
-            href="/quiz"
-            className="group flex items-center justify-center gap-3 w-full bg-amber-500 hover:bg-amber-400 active:scale-[0.98] text-slate-900 font-black text-xl py-5 rounded-2xl transition-all duration-200 shadow-2xl shadow-amber-500/30 uppercase tracking-wide"
-          >
-            Iniciar diagnóstico
-            <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
-          </Link>
-          <p className="text-slate-600 text-xs">Sem cadastro. Resultado imediato.</p>
-        </div>
-
-        {/* Mini social proof */}
-        <div className="flex justify-center gap-6 pt-2">
-          {[
-            { valor: '15', desc: 'Perguntas' },
-            { valor: '4', desc: 'Dimensões' },
-            { valor: '2min', desc: 'Duração' },
-          ].map(({ valor, desc }) => (
-            <div key={desc} className="text-center">
-              <div className="text-amber-400 font-black text-xl">{valor}</div>
-              <div className="text-slate-500 text-xs">{desc}</div>
-            </div>
-          ))}
-        </div>
+        <Link
+          href="/quiz"
+          className="group flex items-center justify-center gap-3 w-full bg-amber-500 hover:bg-amber-400 active:scale-[0.98] text-slate-900 font-black text-xl py-5 rounded-2xl transition-all duration-200 shadow-2xl shadow-amber-500/30 uppercase tracking-wide"
+        >
+          Iniciar diagnóstico
+          <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
+        </Link>
 
       </div>
     </main>
