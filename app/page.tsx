@@ -15,8 +15,8 @@ export default function Home() {
           className="w-full object-cover h-[55vh] sm:h-[60vh]"
           priority
         />
-        {/* Gradient overlay bottom */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0d1117] via-[#0d1117]/40 to-transparent" />
+        {/* Gradient overlay — começa no último quarto */}
+        <div className="absolute inset-0" style={{background: 'linear-gradient(to top, #0d1117 0%, #0d1117 8%, rgba(13,17,23,0.85) 18%, rgba(13,17,23,0) 38%)'}} />
 
         {/* Badge no topo */}
         <div className="absolute top-5 left-0 right-0 flex justify-center">
