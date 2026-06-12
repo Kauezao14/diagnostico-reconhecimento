@@ -161,14 +161,18 @@ export default function QuizPage() {
             </div>
 
             <div>
-              <label className="block text-slate-300 text-sm mb-2">Qual é o seu cargo? <span className="text-slate-500">(opcional)</span></label>
-              <input
-                type="text"
+              <label className="block text-slate-300 text-sm mb-2">Função <span className="text-slate-500">(opcional)</span></label>
+              <select
                 value={cargo}
                 onChange={(e) => setCargo(e.target.value)}
-                placeholder="Ex: Analista, Coordenador, Gerente..."
-                className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
-              />
+                className="w-full bg-slate-800 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-500 transition-colors appearance-none cursor-pointer"
+              >
+                <option value="">Selecione sua função</option>
+                <option value="Diretor / Gerente">Diretor / Gerente</option>
+                <option value="Supervisor / Coordenador">Supervisor / Coordenador</option>
+                <option value="Líder / Encarregado">Líder / Encarregado</option>
+                <option value="Funcionário">Funcionário</option>
+              </select>
             </div>
 
             <div>
