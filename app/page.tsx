@@ -15,7 +15,7 @@ export default function Home() {
 
         {/* Foto do Lucas */}
         <div className="rounded-2xl overflow-hidden border border-white/10 shadow-xl">
-          <Image src="/lucas-pensando.jpg" alt="Lucas" width={800} height={450} className="w-full object-cover max-h-72" />
+          <Image src="/lucas-pensando.jpg" alt="Lucas" width={800} height={600} className="w-full object-cover max-h-[480px]" />
         </div>
 
         {/* Headline */}
