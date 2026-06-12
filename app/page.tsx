@@ -8,7 +8,7 @@ export default function Home() {
       {/* Hero com imagem e overlay */}
       <div className="relative w-full max-w-2xl">
         <Image
-          src="/lucas-pensando.jpg"
+          src="/lucas-terno.png"
           alt="Lucas"
           width={800}
           height={600}
