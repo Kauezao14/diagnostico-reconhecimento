@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import type { ResultadoQuiz } from '@/lib/quiz';
 
 const CORES_PERFIL = {
@@ -130,11 +131,8 @@ export default function ResultadoPage() {
 
           {/* Ebook 2 - Líder 10x */}
           <div className="bg-gradient-to-br from-amber-900/40 to-slate-900 rounded-2xl p-6 border border-amber-500/20 flex flex-col sm:flex-row items-center gap-5">
-            <div className="flex-shrink-0 w-28 h-36 bg-gradient-to-br from-amber-500 to-orange-700 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20 border border-amber-500/30">
-              <div className="text-center px-2">
-                <div className="text-amber-100 text-xs font-bold uppercase tracking-wide">LÍDER</div>
-                <div className="text-white text-4xl font-black">10X</div>
-              </div>
+            <div className="flex-shrink-0">
+              <Image src="/lider10x.png" alt="Líder 10X" width={112} height={144} className="rounded-xl shadow-lg shadow-amber-500/20 object-cover" />
             </div>
             <div className="flex-1 text-center sm:text-left space-y-3">
               <h3 className="text-white font-bold text-lg">Líder 10X</h3>
