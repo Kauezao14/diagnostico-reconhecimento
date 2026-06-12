@@ -34,7 +34,6 @@ export default function Home() {
           INICIAR →
         </Link>
 
-        <p className="text-slate-500 text-xs">100% gratuito · Resultado imediato · Sem cadastro obrigatório</p>
       </div>
     </main>
   );

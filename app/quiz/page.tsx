@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { PERGUNTAS, OPCOES_PADRAO, OPCOES_POR_PERGUNTA, calcularResultado } from '@/lib/quiz';
 
 const TAMANHOS_EMPRESA = ['Até 10 funcionários', '11 a 50 funcionários', '51 a 100 funcionários', 'Mais de 100 funcionários'];
@@ -80,12 +81,14 @@ export default function QuizPage() {
 
   function avancarParaQuiz() {
     const novosErros: { email?: string; telefone?: string } = {};
-    if (email && !validarEmail(email)) novosErros.email = 'Digite um e-mail válido (ex: nome@gmail.com)';
-    if (telefone && !validarTelefone(telefone)) novosErros.telefone = 'Digite um número completo com DDD (ex: (11) 99999-9999)';
+    if (!validarEmail(email)) novosErros.email = 'Digite um e-mail válido (ex: nome@gmail.com)';
+    if (!validarTelefone(telefone)) novosErros.telefone = 'Digite um número completo com DDD (ex: (11) 99999-9999)';
     if (Object.keys(novosErros).length > 0) { setErros(novosErros); return; }
     setErros({});
     setEtapa('quiz');
   }
+
+  const cadastroCompleto = nome.trim() && email.trim() && telefone.trim() && cargo && empresaTamanho;
 
   function toggleExtra(id: string, opcao: string) {
     setExtras((prev) => {
@@ -137,7 +140,7 @@ export default function QuizPage() {
             </div>
 
             <div>
-              <label className="block text-slate-300 text-sm mb-2">Seu e-mail <span className="text-slate-500">(opcional)</span></label>
+              <label className="block text-slate-300 text-sm mb-2">Seu e-mail <span className="text-red-400">*</span></label>
               <input
                 type="email"
                 value={email}
@@ -149,7 +152,7 @@ export default function QuizPage() {
             </div>
 
             <div>
-              <label className="block text-slate-300 text-sm mb-2">Seu WhatsApp <span className="text-slate-500">(opcional)</span></label>
+              <label className="block text-slate-300 text-sm mb-2">Seu WhatsApp <span className="text-red-400">*</span></label>
               <input
                 type="tel"
                 value={telefone}
@@ -161,7 +164,7 @@ export default function QuizPage() {
             </div>
 
             <div>
-              <label className="block text-slate-300 text-sm mb-2">Função <span className="text-slate-500">(opcional)</span></label>
+              <label className="block text-slate-300 text-sm mb-2">Função <span className="text-red-400">*</span></label>
               <select
                 value={cargo}
                 onChange={(e) => setCargo(e.target.value)}
@@ -176,7 +179,7 @@ export default function QuizPage() {
             </div>
 
             <div>
-              <label className="block text-slate-300 text-sm mb-2">Quantos funcionários tem em sua empresa? <span className="text-slate-500">(opcional)</span></label>
+              <label className="block text-slate-300 text-sm mb-2">Quantos funcionários tem em sua empresa? <span className="text-red-400">*</span></label>
               <div className="grid grid-cols-2 gap-2">
                 {TAMANHOS_EMPRESA.map((t) => (
                   <button
@@ -197,7 +200,7 @@ export default function QuizPage() {
 
             <button
               onClick={avancarParaQuiz}
-              disabled={!nome.trim()}
+              disabled={!cadastroCompleto}
               className="w-full bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed text-slate-900 font-bold py-4 rounded-xl transition-colors"
             >
               Começar o Diagnóstico →
@@ -260,6 +263,7 @@ export default function QuizPage() {
 
   // ── ETAPA: QUIZ ──
   const pergunta = PERGUNTAS[atual];
+
   const opcoes = OPCOES_POR_PERGUNTA[pergunta?.id] ?? OPCOES_PADRAO;
   const progresso = Math.round((atual / 15) * 100);
   const todasRespondidas = respostas.every((r) => r > 0);
@@ -267,6 +271,15 @@ export default function QuizPage() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4 py-12">
       <div className="max-w-2xl w-full space-y-6">
+        {/* Palestrante */}
+        <div className="flex items-center gap-4 bg-white/5 rounded-2xl p-4 border border-white/10">
+          <Image src="/lucas.jpg" alt="Lucas" width={64} height={64} className="rounded-full object-cover flex-shrink-0 border-2 border-amber-500" />
+          <div>
+            <p className="text-white font-semibold text-sm">Diagnóstico de Reconhecimento Profissional</p>
+            <p className="text-slate-400 text-xs">Responda com honestidade para obter o resultado mais preciso</p>
+          </div>
+        </div>
+
         {/* Progresso */}
         <div className="space-y-2">
           <div className="flex justify-between text-sm text-slate-400">
