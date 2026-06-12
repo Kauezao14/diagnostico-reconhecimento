@@ -107,11 +107,17 @@ export function calcularResultado(respostas: number[]): ResultadoQuiz {
     diagnostico = 'Seu trabalho é reconhecido e você é visto como alguém de confiança e potencial crescimento.';
   }
 
-  const planosDeAcao: string[] = [];
-  if (visibilidade < 60) planosDeAcao.push('Aumentar exposição em projetos, reuniões e apresentações.');
-  if (valor < 60) planosDeAcao.push('Aprender a comunicar resultados com indicadores mensuráveis.');
-  if (influencia < 60) planosDeAcao.push('Desenvolver iniciativa, colaboração e protagonismo.');
-  if (relacionamento < 60) planosDeAcao.push('Aumentar conversas de carreira e alinhamento com gestores.');
+  // Sempre exibe os 3 mais fracos, independente do score
+  const dimensoes = [
+    { score: visibilidade, acao: 'Aumentar exposição em projetos, reuniões e apresentações.' },
+    { score: valor, acao: 'Aprender a comunicar resultados com indicadores mensuráveis.' },
+    { score: influencia, acao: 'Desenvolver iniciativa, colaboração e protagonismo.' },
+    { score: relacionamento, acao: 'Aumentar conversas de carreira e alinhamento com gestores.' },
+  ];
+  const planosDeAcao = dimensoes
+    .sort((a, b) => a.score - b.score)
+    .slice(0, 3)
+    .map((d) => d.acao);
 
   return { pontuacao, perfil, titulo, diagnostico, visibilidade, valor, influencia, relacionamento, planosDeAcao };
 }

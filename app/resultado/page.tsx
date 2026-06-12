@@ -54,8 +54,8 @@ export default function ResultadoPage() {
               Seu perfil
             </span>
           </div>
-          <h1 className="text-3xl font-bold text-white">{resultado.titulo}</h1>
-          <p className="text-slate-300 text-lg leading-relaxed">{resultado.diagnostico}</p>
+          <h1 className="text-4xl font-bold text-white">{resultado.titulo}</h1>
+          <p className="text-slate-300 text-xl leading-relaxed">{resultado.diagnostico}</p>
           <div className="inline-block bg-white/10 rounded-xl px-6 py-3">
             <span className="text-slate-400 text-sm">Pontuação total</span>
             <div className="text-4xl font-bold text-amber-400">{resultado.pontuacao}<span className="text-lg text-slate-400">/75</span></div>
@@ -71,10 +71,10 @@ export default function ResultadoPage() {
               <div key={chave} className="space-y-1.5">
                 <div className="flex justify-between items-baseline">
                   <div>
-                    <span className="text-slate-200 font-medium text-sm">{label}</span>
-                    <p className="text-slate-500 text-xs">{desc}</p>
+                    <span className="text-slate-200 font-medium text-base">{label}</span>
+                    <p className="text-slate-500 text-sm">{desc}</p>
                   </div>
-                  <span className="text-slate-300 font-bold text-sm ml-4">{valor}%</span>
+                  <span className="text-slate-300 font-bold text-base ml-4">{valor}%</span>
                 </div>
                 <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                   <div
@@ -90,12 +90,12 @@ export default function ResultadoPage() {
         {/* Plano de ação */}
         {resultado.planosDeAcao.length > 0 && (
           <div className="bg-amber-500/10 rounded-2xl p-6 border border-amber-500/20 space-y-4">
-            <h2 className="text-amber-400 font-bold text-lg">Os 3 Fatores que Estão Limitando Seu Crescimento</h2>
+            <h2 className="text-amber-400 font-bold text-xl">Os 3 Fatores que Estão Limitando Seu Crescimento</h2>
             <div className="space-y-3">
               {resultado.planosDeAcao.map((acao, i) => (
                 <div key={i} className="flex items-start gap-3 bg-white/5 rounded-xl p-4">
-                  <span className="text-amber-400 font-bold text-sm mt-0.5">{i + 1}.</span>
-                  <span className="text-slate-300 text-sm">{acao}</span>
+                  <span className="text-amber-400 font-bold text-base mt-0.5">{i + 1}.</span>
+                  <span className="text-slate-300 text-base">{acao}</span>
                 </div>
               ))}
             </div>

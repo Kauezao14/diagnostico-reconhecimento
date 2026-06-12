@@ -13,6 +13,35 @@ export default function QuizPage() {
   const [telefone, setTelefone] = useState('');
   const [etapa, setEtapa] = useState<'dados' | 'quiz'>('dados');
   const [enviando, setEnviando] = useState(false);
+  const [erros, setErros] = useState<{ email?: string; telefone?: string }>({});
+
+  function formatarTelefone(valor: string) {
+    const digits = valor.replace(/\D/g, '').slice(0, 11);
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  }
+
+  function validarEmail(valor: string) {
+    if (!valor) return true;
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(valor);
+  }
+
+  function validarTelefone(valor: string) {
+    if (!valor) return true;
+    const digits = valor.replace(/\D/g, '');
+    return digits.length === 10 || digits.length === 11;
+  }
+
+  function avancarParaQuiz() {
+    const novosErros: { email?: string; telefone?: string } = {};
+    if (email && !validarEmail(email)) novosErros.email = 'Digite um e-mail válido (ex: nome@gmail.com)';
+    if (telefone && !validarTelefone(telefone)) novosErros.telefone = 'Digite um número completo com DDD (ex: (11) 99999-9999)';
+    if (Object.keys(novosErros).length > 0) { setErros(novosErros); return; }
+    setErros({});
+    setEtapa('quiz');
+  }
 
   const pergunta = PERGUNTAS[atual];
   const opcoes = OPCOES_POR_PERGUNTA[pergunta?.id] ?? OPCOES_PADRAO;
@@ -69,24 +98,26 @@ export default function QuizPage() {
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="para@exemplo.com"
-                className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
+                onChange={(e) => { setEmail(e.target.value); setErros((p) => ({ ...p, email: undefined })); }}
+                placeholder="nome@gmail.com"
+                className={`w-full bg-white/10 border rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none transition-colors ${erros.email ? 'border-red-500' : 'border-white/20 focus:border-amber-500'}`}
               />
+              {erros.email && <p className="text-red-400 text-xs mt-1">{erros.email}</p>}
             </div>
             <div>
               <label className="block text-slate-300 text-sm mb-2">Seu WhatsApp <span className="text-slate-500">(opcional)</span></label>
               <input
                 type="tel"
                 value={telefone}
-                onChange={(e) => setTelefone(e.target.value)}
+                onChange={(e) => { setTelefone(formatarTelefone(e.target.value)); setErros((p) => ({ ...p, telefone: undefined })); }}
                 placeholder="(11) 99999-9999"
-                className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
+                className={`w-full bg-white/10 border rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none transition-colors ${erros.telefone ? 'border-red-500' : 'border-white/20 focus:border-amber-500'}`}
               />
+              {erros.telefone && <p className="text-red-400 text-xs mt-1">{erros.telefone}</p>}
             </div>
 
             <button
-              onClick={() => setEtapa('quiz')}
+              onClick={avancarParaQuiz}
               disabled={!nome.trim()}
               className="w-full bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed text-slate-900 font-bold py-4 rounded-xl transition-colors"
             >
