@@ -109,11 +109,8 @@ export default function ResultadoPage() {
 
           {/* Ebook 1 - Feedback que Transforma */}
           <div className="bg-gradient-to-br from-blue-900/40 to-slate-900 rounded-2xl p-6 border border-blue-500/20 flex flex-col sm:flex-row items-center gap-5">
-            <div className="flex-shrink-0 w-28 h-36 bg-gradient-to-br from-blue-600 to-blue-900 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 border border-blue-500/30">
-              <div className="text-center px-2">
-                <div className="text-blue-200 text-xs font-bold uppercase tracking-wide leading-tight">Feedback que</div>
-                <div className="text-white text-sm font-black uppercase">Transforma</div>
-              </div>
+            <div className="flex-shrink-0">
+              <Image src="/feedback.jpg" alt="Feedback que Transforma" width={112} height={144} className="rounded-xl shadow-lg shadow-blue-500/20 object-cover" />
             </div>
             <div className="flex-1 text-center sm:text-left space-y-3">
               <h3 className="text-white font-bold text-lg">EBOOK - Feedback que transforma</h3>
