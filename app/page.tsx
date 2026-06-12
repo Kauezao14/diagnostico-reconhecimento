@@ -26,36 +26,6 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 text-center">
-          {[
-            { num: '15', label: 'Perguntas' },
-            { num: '4', label: 'Dimensões' },
-            { num: '4', label: 'Perfis' },
-          ].map(({ num, label }) => (
-            <div key={label} className="bg-white/5 rounded-xl p-4 border border-white/10">
-              <div className="text-2xl font-bold text-amber-400">{num}</div>
-              <div className="text-sm text-slate-400">{label}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Benefícios */}
-        <div className="bg-white/5 rounded-2xl p-6 border border-white/10 text-left space-y-3">
-          <p className="text-slate-400 text-sm font-semibold uppercase tracking-wider">Você vai descobrir</p>
-          {[
-            'Seu perfil de reconhecimento dentro da empresa',
-            'As dimensões que estão travando seu crescimento',
-            'Os 3 fatores que estão limitando sua valorização',
-            'Um plano de ação personalizado para virar o jogo',
-          ].map((item) => (
-            <div key={item} className="flex items-start gap-3">
-              <span className="text-amber-400 mt-0.5">✓</span>
-              <span className="text-slate-300 text-sm">{item}</span>
-            </div>
-          ))}
-        </div>
-
         {/* CTA */}
         <Link
           href="/quiz"

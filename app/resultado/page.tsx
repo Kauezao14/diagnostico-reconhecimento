@@ -116,7 +116,7 @@ export default function ResultadoPage() {
               </div>
             </div>
             <div className="flex-1 text-center sm:text-left space-y-3">
-              <h3 className="text-white font-bold text-lg">Feedback que Transforma</h3>
+              <h3 className="text-white font-bold text-lg">EBOOK - Feedback que transforma</h3>
               <p className="text-slate-300 text-sm leading-relaxed">Aprenda a dar e receber feedbacks que realmente mudam comportamentos e aceleram seu crescimento profissional.</p>
               <a
                 href="https://pay.kiwify.com.br/e5gogMi"
@@ -135,7 +135,7 @@ export default function ResultadoPage() {
               <Image src="/lider10x.png" alt="Líder 10X" width={112} height={144} className="rounded-xl shadow-lg shadow-amber-500/20 object-cover" />
             </div>
             <div className="flex-1 text-center sm:text-left space-y-3">
-              <h3 className="text-white font-bold text-lg">Líder 10X</h3>
+              <h3 className="text-white font-bold text-lg">EBOOK - Líder 10X</h3>
               <p className="text-slate-300 text-sm leading-relaxed">O guia definitivo para multiplicar sua liderança, reconhecimento e resultados dentro da empresa em 90 dias.</p>
               <a
                 href="https://pay.kiwify.com.br/nzi1kns"
