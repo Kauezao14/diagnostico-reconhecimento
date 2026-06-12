@@ -27,7 +27,7 @@ export default function Home() {
       </div>
 
       {/* Conteúdo abaixo */}
-      <div className="w-full max-w-2xl px-5 pb-12 -mt-2 space-y-7 text-center">
+      <div className="w-full max-w-2xl px-5 pb-12 mt-8 space-y-7 text-center">
 
         {/* Pill */}
         <div className="flex justify-center">
