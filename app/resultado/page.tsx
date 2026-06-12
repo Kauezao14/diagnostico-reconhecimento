@@ -102,15 +102,60 @@ export default function ResultadoPage() {
           </div>
         )}
 
-        {/* CTA */}
-        <div className="text-center space-y-3">
-          <Link
-            href="/quiz"
-            className="inline-block bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl transition-colors text-sm"
-          >
+        {/* Ebooks */}
+        <div className="space-y-4">
+          <p className="text-center text-slate-400 text-sm font-semibold uppercase tracking-wider">Dê o próximo passo</p>
+
+          {/* Ebook 1 - Feedback que Transforma */}
+          <div className="bg-gradient-to-br from-blue-900/40 to-slate-900 rounded-2xl p-6 border border-blue-500/20 flex flex-col sm:flex-row items-center gap-5">
+            <div className="flex-shrink-0 w-28 h-36 bg-gradient-to-br from-blue-600 to-blue-900 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 border border-blue-500/30">
+              <div className="text-center px-2">
+                <div className="text-blue-200 text-xs font-bold uppercase tracking-wide leading-tight">Feedback que</div>
+                <div className="text-white text-sm font-black uppercase">Transforma</div>
+              </div>
+            </div>
+            <div className="flex-1 text-center sm:text-left space-y-3">
+              <h3 className="text-white font-bold text-lg">Feedback que Transforma</h3>
+              <p className="text-slate-300 text-sm leading-relaxed">Aprenda a dar e receber feedbacks que realmente mudam comportamentos e aceleram seu crescimento profissional.</p>
+              <a
+                href="https://pay.kiwify.com.br/e5gogMi"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-blue-500 hover:bg-blue-400 text-white font-bold px-6 py-3 rounded-xl transition-colors shadow-lg shadow-blue-500/25 text-sm"
+              >
+                ADQUIRA AGORA →
+              </a>
+            </div>
+          </div>
+
+          {/* Ebook 2 - Líder 10x */}
+          <div className="bg-gradient-to-br from-amber-900/40 to-slate-900 rounded-2xl p-6 border border-amber-500/20 flex flex-col sm:flex-row items-center gap-5">
+            <div className="flex-shrink-0 w-28 h-36 bg-gradient-to-br from-amber-500 to-orange-700 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20 border border-amber-500/30">
+              <div className="text-center px-2">
+                <div className="text-amber-100 text-xs font-bold uppercase tracking-wide">LÍDER</div>
+                <div className="text-white text-4xl font-black">10X</div>
+              </div>
+            </div>
+            <div className="flex-1 text-center sm:text-left space-y-3">
+              <h3 className="text-white font-bold text-lg">Líder 10X</h3>
+              <p className="text-slate-300 text-sm leading-relaxed">O guia definitivo para multiplicar sua liderança, reconhecimento e resultados dentro da empresa em 90 dias.</p>
+              <a
+                href="https://pay.kiwify.com.br/nzi1kns"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold px-6 py-3 rounded-xl transition-colors shadow-lg shadow-amber-500/25 text-sm"
+              >
+                ADQUIRA AGORA →
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Refazer */}
+        <div className="text-center">
+          <Link href="/quiz" className="inline-block bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl transition-colors text-sm">
             Refazer o diagnóstico
           </Link>
-          <p className="text-slate-500 text-xs">Compartilhe seu resultado com colegas e líderes</p>
         </div>
       </div>
     </main>

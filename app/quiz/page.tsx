@@ -4,6 +4,47 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { PERGUNTAS, OPCOES_PADRAO, OPCOES_POR_PERGUNTA, calcularResultado } from '@/lib/quiz';
 
+const TAMANHOS_EMPRESA = ['Até 10 funcionários', '11 a 50 funcionários', '51 a 100 funcionários', 'Mais de 100 funcionários'];
+
+const PERGUNTAS_EXTRAS = [
+  {
+    id: 'desafio',
+    texto: 'Qual é o seu maior desafio profissional atualmente?',
+    opcoes: [
+      'Falta de reconhecimento pelo meu trabalho',
+      'Falta de oportunidades de crescimento',
+      'Dificuldade para liderar pessoas',
+      'Excesso de trabalho e pressão',
+      'Falta de apoio da liderança',
+      'Dificuldade de comunicação e influência',
+    ],
+  },
+  {
+    id: 'objetivo',
+    texto: 'Qual resultado você mais gostaria de conquistar nos próximos 12 meses?',
+    opcoes: [
+      'Ser promovido(a)',
+      'Receber aumento salarial',
+      'Assumir uma posição de liderança',
+      'Ser reconhecido(a) dentro da empresa',
+      'Melhorar meu desempenho profissional',
+      'Ter mais equilíbrio entre vida e trabalho',
+    ],
+  },
+  {
+    id: 'preocupacao',
+    texto: 'O que mais preocupa você em relação à sua carreira hoje?',
+    opcoes: [
+      'Ficar estagnado(a) no mesmo cargo',
+      'Não ser valorizado(a) pelo que entrego',
+      'Perder espaço para outros profissionais',
+      'Não estar preparado(a) para novas oportunidades',
+      'Ser desligado(a) da empresa',
+      'Não alcançar meus objetivos profissionais',
+    ],
+  },
+];
+
 export default function QuizPage() {
   const router = useRouter();
   const [atual, setAtual] = useState(0);
@@ -11,9 +52,11 @@ export default function QuizPage() {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [telefone, setTelefone] = useState('');
-  const [etapa, setEtapa] = useState<'dados' | 'quiz'>('dados');
+  const [empresaTamanho, setEmpresaTamanho] = useState('');
+  const [etapa, setEtapa] = useState<'dados' | 'quiz' | 'extras'>('dados');
   const [enviando, setEnviando] = useState(false);
   const [erros, setErros] = useState<{ email?: string; telefone?: string }>({});
+  const [extras, setExtras] = useState<Record<string, string[]>>({ desafio: [], objetivo: [], preocupacao: [] });
 
   function formatarTelefone(valor: string) {
     const digits = valor.replace(/\D/g, '').slice(0, 11);
@@ -43,39 +86,37 @@ export default function QuizPage() {
     setEtapa('quiz');
   }
 
-  const pergunta = PERGUNTAS[atual];
-  const opcoes = OPCOES_POR_PERGUNTA[pergunta?.id] ?? OPCOES_PADRAO;
-  const progresso = Math.round(((atual) / 15) * 100);
+  function toggleExtra(id: string, opcao: string) {
+    setExtras((prev) => {
+      const atual = prev[id] ?? [];
+      return { ...prev, [id]: atual.includes(opcao) ? atual.filter((o) => o !== opcao) : [...atual, opcao] };
+    });
+  }
 
   function selecionarResposta(valor: number) {
     const novas = [...respostas];
     novas[atual] = valor;
     setRespostas(novas);
-
-    if (atual < 14) {
-      setTimeout(() => setAtual(atual + 1), 300);
-    }
+    if (atual < 14) setTimeout(() => setAtual(atual + 1), 300);
   }
 
   async function finalizar() {
     setEnviando(true);
-
-    // Calcula localmente e navega imediatamente — não depende do banco
     const resultado = calcularResultado(respostas);
     sessionStorage.setItem('resultado', JSON.stringify(resultado));
     router.push('/resultado');
 
-    // Salva no banco em background (falha silenciosa)
     fetch('/api/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nome, email, telefone, respostas }),
+      body: JSON.stringify({ nome, email, telefone, empresaTamanho, respostas, extras }),
     }).catch(() => {});
   }
 
+  // ── ETAPA: DADOS ──
   if (etapa === 'dados') {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4">
+      <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4 py-12">
         <div className="max-w-lg w-full space-y-6">
           <div className="text-center space-y-2">
             <h2 className="text-2xl font-bold text-white">Antes de começar</h2>
@@ -84,7 +125,7 @@ export default function QuizPage() {
 
           <div className="bg-white/5 rounded-2xl p-8 border border-white/10 space-y-4">
             <div>
-              <label className="block text-slate-300 text-sm mb-2">Seu nome</label>
+              <label className="block text-slate-300 text-sm mb-2">Seu nome <span className="text-red-400">*</span></label>
               <input
                 type="text"
                 value={nome}
@@ -93,6 +134,7 @@ export default function QuizPage() {
                 className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
               />
             </div>
+
             <div>
               <label className="block text-slate-300 text-sm mb-2">Seu e-mail <span className="text-slate-500">(opcional)</span></label>
               <input
@@ -104,6 +146,7 @@ export default function QuizPage() {
               />
               {erros.email && <p className="text-red-400 text-xs mt-1">{erros.email}</p>}
             </div>
+
             <div>
               <label className="block text-slate-300 text-sm mb-2">Seu WhatsApp <span className="text-slate-500">(opcional)</span></label>
               <input
@@ -114,6 +157,26 @@ export default function QuizPage() {
                 className={`w-full bg-white/10 border rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none transition-colors ${erros.telefone ? 'border-red-500' : 'border-white/20 focus:border-amber-500'}`}
               />
               {erros.telefone && <p className="text-red-400 text-xs mt-1">{erros.telefone}</p>}
+            </div>
+
+            <div>
+              <label className="block text-slate-300 text-sm mb-2">Quantos funcionários tem em sua empresa? <span className="text-slate-500">(opcional)</span></label>
+              <div className="grid grid-cols-2 gap-2">
+                {TAMANHOS_EMPRESA.map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setEmpresaTamanho(t === empresaTamanho ? '' : t)}
+                    className={`px-3 py-2.5 rounded-lg border text-sm transition-all ${
+                      empresaTamanho === t
+                        ? 'bg-amber-500/20 border-amber-500 text-amber-300'
+                        : 'bg-white/5 border-white/10 text-slate-300 hover:border-amber-500/50'
+                    }`}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <button
@@ -129,6 +192,60 @@ export default function QuizPage() {
     );
   }
 
+  // ── ETAPA: PERGUNTAS EXTRAS (múltipla escolha) ──
+  if (etapa === 'extras') {
+    return (
+      <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4 py-12">
+        <div className="max-w-2xl w-full space-y-6">
+          <div className="text-center space-y-2">
+            <h2 className="text-2xl font-bold text-white">Quase lá!</h2>
+            <p className="text-slate-400">Mais 3 perguntas rápidas para personalizar ainda mais seu diagnóstico</p>
+          </div>
+
+          {PERGUNTAS_EXTRAS.map((perg) => (
+            <div key={perg.id} className="bg-white/5 rounded-2xl p-6 border border-white/10 space-y-4">
+              <h3 className="text-white font-semibold text-base leading-snug">{perg.texto}</h3>
+              <p className="text-slate-500 text-xs">Pode selecionar mais de uma opção</p>
+              <div className="space-y-2">
+                {perg.opcoes.map((opcao) => {
+                  const selecionado = extras[perg.id]?.includes(opcao);
+                  return (
+                    <button
+                      key={opcao}
+                      onClick={() => toggleExtra(perg.id, opcao)}
+                      className={`w-full text-left px-4 py-3 rounded-xl border transition-all flex items-center gap-3 ${
+                        selecionado
+                          ? 'bg-amber-500/20 border-amber-500 text-amber-300'
+                          : 'bg-white/5 border-white/10 text-slate-300 hover:border-amber-500/40 hover:bg-white/10'
+                      }`}
+                    >
+                      <span className={`w-4 h-4 rounded border-2 flex-shrink-0 flex items-center justify-center text-xs ${selecionado ? 'bg-amber-500 border-amber-500 text-slate-900' : 'border-white/30'}`}>
+                        {selecionado && '✓'}
+                      </span>
+                      <span className="text-sm">{opcao}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+
+          <button
+            onClick={finalizar}
+            disabled={enviando}
+            className="w-full bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-slate-900 font-bold py-4 rounded-xl transition-colors text-lg"
+          >
+            {enviando ? 'Gerando seu relatório...' : 'Ver meu resultado →'}
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  // ── ETAPA: QUIZ ──
+  const pergunta = PERGUNTAS[atual];
+  const opcoes = OPCOES_POR_PERGUNTA[pergunta?.id] ?? OPCOES_PADRAO;
+  const progresso = Math.round((atual / 15) * 100);
   const todasRespondidas = respostas.every((r) => r > 0);
 
   return (
@@ -141,17 +258,13 @@ export default function QuizPage() {
             <span>{progresso}%</span>
           </div>
           <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-amber-500 rounded-full transition-all duration-500"
-              style={{ width: `${progresso}%` }}
-            />
+            <div className="h-full bg-amber-500 rounded-full transition-all duration-500" style={{ width: `${progresso}%` }} />
           </div>
         </div>
 
         {/* Pergunta */}
         <div className="bg-white/5 rounded-2xl p-8 border border-white/10 space-y-6">
           <h2 className="text-xl font-semibold text-white leading-snug">{pergunta.texto}</h2>
-
           <div className="space-y-3">
             {opcoes.map((opcao) => (
               <button
@@ -189,11 +302,11 @@ export default function QuizPage() {
             </button>
           ) : (
             <button
-              onClick={finalizar}
-              disabled={!todasRespondidas || enviando}
+              onClick={() => todasRespondidas && setEtapa('extras')}
+              disabled={!todasRespondidas}
               className="bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed text-slate-900 font-bold px-8 py-3 rounded-xl transition-colors"
             >
-              {enviando ? 'Calculando...' : 'Ver meu resultado →'}
+              Continuar →
             </button>
           )}
         </div>
