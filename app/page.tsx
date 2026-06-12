@@ -8,7 +8,7 @@ export default function Home() {
         {/* Logo / Branding */}
         <div className="flex justify-center">
           <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl px-6 py-3 shadow-lg shadow-amber-500/30">
-            <span className="text-slate-900 font-black text-2xl tracking-tight">LÍDER 10X</span>
+            <span className="text-slate-900 font-black text-2xl tracking-tight">DIAGNÓSTICO DE RECONHECIMENTO</span>
           </div>
         </div>
 
