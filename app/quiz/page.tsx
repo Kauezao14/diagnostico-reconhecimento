@@ -272,12 +272,8 @@ export default function QuizPage() {
     <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4 py-12">
       <div className="max-w-2xl w-full space-y-6">
         {/* Palestrante */}
-        <div className="flex items-center gap-4 bg-white/5 rounded-2xl p-4 border border-white/10">
-          <Image src="/lucas.jpg" alt="Lucas" width={64} height={64} className="rounded-full object-cover flex-shrink-0 border-2 border-amber-500" />
-          <div>
-            <p className="text-white font-semibold text-sm">Diagnóstico de Reconhecimento Profissional</p>
-            <p className="text-slate-400 text-xs">Responda com honestidade para obter o resultado mais preciso</p>
-          </div>
+        <div className="rounded-2xl overflow-hidden border border-white/10">
+          <Image src="/lucas.jpg" alt="Lucas" width={800} height={400} className="w-full object-cover max-h-56" />
         </div>
 
         {/* Progresso */}
