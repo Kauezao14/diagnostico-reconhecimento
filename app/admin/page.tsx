@@ -120,6 +120,7 @@ export default function AdminPage() {
   const [erro, setErro] = useState('');
   const [ultimaAtt, setUltimaAtt] = useState('');
   const [senhaLocal, setSenhaLocal] = useState('');
+  const [selecionado, setSelecionado] = useState<Registro | null>(null);
 
   const buscarDados = useCallback(async (secret: string) => {
     setCarregando(true);
@@ -190,6 +191,94 @@ export default function AdminPage() {
 
   return (
     <main className="min-h-screen bg-[#0d1117] px-4 py-8">
+
+      {/* Modal detalhe pessoa */}
+      {selecionado && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4" onClick={() => setSelecionado(null)}>
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+          <div className="relative bg-[#161b22] border border-white/10 rounded-3xl p-6 w-full max-w-lg space-y-5 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+
+            {/* Cabeçalho */}
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-black text-white">{selecionado.nome || 'Sem nome'}</h2>
+                <p className="text-slate-400 text-sm">{selecionado.cargo} · {selecionado.empresa_tamanho}</p>
+                <p className="text-slate-500 text-xs mt-1">{selecionado.email} · {selecionado.telefone}</p>
+              </div>
+              <button onClick={() => setSelecionado(null)} className="text-slate-400 hover:text-white text-xl leading-none flex-shrink-0">✕</button>
+            </div>
+
+            {/* Perfil + pontuação */}
+            <div className="flex items-center gap-4 bg-white/5 rounded-2xl p-4">
+              <span className={`text-sm font-bold px-3 py-1.5 rounded-full border ${PERFIL_COR[selecionado.perfil]}`}>
+                {PERFIL_LABEL[selecionado.perfil]}
+              </span>
+              <div>
+                <span className="text-2xl font-black text-amber-400">{selecionado.pontuacao}</span>
+                <span className="text-slate-500 text-sm"> / 75 pontos</span>
+              </div>
+              <span className="ml-auto text-slate-500 text-xs">{selecionado.origem === 'quiz2' ? 'Quiz 2' : 'Quiz 1'}</span>
+            </div>
+
+            {/* Dimensões */}
+            <div className="space-y-3">
+              <h3 className="text-white font-bold text-sm">Dimensões</h3>
+              <DimBarra label="Visibilidade" valor={selecionado.visibilidade} cor="bg-amber-500" />
+              <DimBarra label="Valor Percebido" valor={selecionado.valor_percebido} cor="bg-blue-500" />
+              <DimBarra label="Influência" valor={selecionado.influencia} cor="bg-purple-500" />
+              <DimBarra label="Relacionamento" valor={selecionado.relacionamento} cor="bg-emerald-500" />
+            </div>
+
+            {/* Desafios */}
+            {(selecionado.desafio ?? []).length > 0 && (
+              <div className="space-y-2">
+                <h3 className="text-white font-bold text-sm">Maiores Desafios</h3>
+                <div className="space-y-1.5">
+                  {selecionado.desafio.map((d, i) => (
+                    <div key={i} className="flex items-start gap-2 bg-red-500/10 border border-red-500/20 rounded-xl px-3 py-2">
+                      <span className="text-red-400 text-xs mt-0.5">●</span>
+                      <span className="text-slate-300 text-sm">{d}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Objetivos */}
+            {(selecionado.objetivo ?? []).length > 0 && (
+              <div className="space-y-2">
+                <h3 className="text-white font-bold text-sm">Objetivos nos Próximos 12 Meses</h3>
+                <div className="space-y-1.5">
+                  {selecionado.objetivo.map((o, i) => (
+                    <div key={i} className="flex items-start gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-3 py-2">
+                      <span className="text-emerald-400 text-xs mt-0.5">●</span>
+                      <span className="text-slate-300 text-sm">{o}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Preocupações */}
+            {(selecionado.preocupacao ?? []).length > 0 && (
+              <div className="space-y-2">
+                <h3 className="text-white font-bold text-sm">Principais Preocupações</h3>
+                <div className="space-y-1.5">
+                  {selecionado.preocupacao.map((p, i) => (
+                    <div key={i} className="flex items-start gap-2 bg-purple-500/10 border border-purple-500/20 rounded-xl px-3 py-2">
+                      <span className="text-purple-400 text-xs mt-0.5">●</span>
+                      <span className="text-slate-300 text-sm">{p}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <p className="text-slate-600 text-xs text-center">Respondeu em {selecionado.data}</p>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-5xl mx-auto space-y-6">
 
         {/* Header */}
@@ -291,7 +380,11 @@ export default function AdminPage() {
                 <tbody>
                   {dados.map((r, i) => (
                     <tr key={r.id} className={`border-b border-white/5 hover:bg-white/5 transition-colors ${i % 2 === 0 ? '' : 'bg-white/[0.02]'}`}>
-                      <td className="px-4 py-3 text-white font-medium whitespace-nowrap">{r.nome || '—'}</td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <button onClick={() => setSelecionado(r)} className="text-white font-medium hover:text-amber-400 transition-colors underline underline-offset-2 decoration-white/20 hover:decoration-amber-400/50 text-left">
+                          {r.nome || '—'}
+                        </button>
+                      </td>
                       <td className="px-4 py-3 text-slate-300 whitespace-nowrap">{r.cargo || '—'}</td>
                       <td className="px-4 py-3 text-slate-400 whitespace-nowrap">{r.email || '—'}</td>
                       <td className="px-4 py-3 text-slate-400 whitespace-nowrap">{r.telefone || '—'}</td>
