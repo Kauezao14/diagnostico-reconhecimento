@@ -4,7 +4,7 @@ import { calcularResultado } from '@/lib/quiz';
 
 export async function POST(req: NextRequest) {
   try {
-    const { nome, email, telefone, cargo, empresaTamanho, respostas, extras } = await req.json();
+    const { nome, email, telefone, cargo, empresaTamanho, respostas, extras, origem } = await req.json();
 
     if (!respostas || respostas.length !== 15) {
       return NextResponse.json({ error: 'Respostas inválidas' }, { status: 400 });
@@ -31,13 +31,14 @@ export async function POST(req: NextRequest) {
         desafio JSONB,
         objetivo JSONB,
         preocupacao JSONB,
+        origem TEXT DEFAULT 'quiz1',
         criado_em TIMESTAMPTZ DEFAULT NOW()
       )
     `;
 
     const [row] = await sql`
       INSERT INTO resultados_quiz
-        (nome, email, telefone, cargo, empresa_tamanho, pontuacao, perfil, visibilidade, valor_percebido, influencia, relacionamento, respostas, desafio, objetivo, preocupacao)
+        (nome, email, telefone, cargo, empresa_tamanho, pontuacao, perfil, visibilidade, valor_percebido, influencia, relacionamento, respostas, desafio, objetivo, preocupacao, origem)
       VALUES
         (${nome || null}, ${email || null}, ${telefone || null}, ${cargo || null}, ${empresaTamanho || null},
          ${resultado.pontuacao}, ${resultado.perfil},
@@ -45,7 +46,8 @@ export async function POST(req: NextRequest) {
          ${JSON.stringify(respostas)},
          ${JSON.stringify(extras?.desafio ?? [])},
          ${JSON.stringify(extras?.objetivo ?? [])},
-         ${JSON.stringify(extras?.preocupacao ?? [])})
+         ${JSON.stringify(extras?.preocupacao ?? [])},
+         ${origem || 'quiz1'})
       RETURNING id
     `;
 
