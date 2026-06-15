@@ -1,6 +1,51 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createHash } from 'crypto';
 import { getDb } from '@/lib/db';
 import { calcularResultado } from '@/lib/quiz';
+
+function sha256(value: string) {
+  return createHash('sha256').update(value.trim().toLowerCase()).digest('hex');
+}
+
+async function enviarEventoFacebook(dados: {
+  email: string;
+  telefone: string;
+  nome: string;
+  sourceUrl: string;
+  clientIp: string;
+  clientUserAgent: string;
+}) {
+  const pixelId = process.env.FB_PIXEL_ID;
+  const token = process.env.FB_CONVERSIONS_TOKEN;
+  if (!pixelId || !token) return;
+
+  const primeiroNome = dados.nome.split(' ')[0] ?? '';
+  const sobrenome = dados.nome.split(' ').slice(1).join(' ') ?? '';
+  const telefoneDigitos = dados.telefone.replace(/\D/g, '');
+
+  const payload = {
+    data: [{
+      event_name: 'Lead',
+      event_time: Math.floor(Date.now() / 1000),
+      action_source: 'website',
+      event_source_url: dados.sourceUrl,
+      user_data: {
+        em: [sha256(dados.email)],
+        ph: telefoneDigitos ? [sha256(telefoneDigitos)] : undefined,
+        fn: primeiroNome ? [sha256(primeiroNome)] : undefined,
+        ln: sobrenome ? [sha256(sobrenome)] : undefined,
+        client_ip_address: dados.clientIp,
+        client_user_agent: dados.clientUserAgent,
+      },
+    }],
+  };
+
+  await fetch(`https://graph.facebook.com/v19.0/${pixelId}/events?access_token=${token}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -50,6 +95,18 @@ export async function POST(req: NextRequest) {
          ${origem || 'quiz1'})
       RETURNING id
     `;
+
+    // Dispara evento Lead no Facebook Conversions API (fire-and-forget)
+    if (email) {
+      enviarEventoFacebook({
+        email,
+        telefone: telefone ?? '',
+        nome: nome ?? '',
+        sourceUrl: req.headers.get('referer') ?? 'https://diagnostico-reconhecimento.vercel.app',
+        clientIp: req.headers.get('x-forwarded-for')?.split(',')[0] ?? '',
+        clientUserAgent: req.headers.get('user-agent') ?? '',
+      }).catch(() => {});
+    }
 
     return NextResponse.json({ id: row.id, resultado });
   } catch (err) {
