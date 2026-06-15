@@ -16,6 +16,9 @@ interface Registro {
   influencia: number;
   relacionamento: number;
   origem: string;
+  desafio: string[];
+  objetivo: string[];
+  preocupacao: string[];
   data: string;
 }
 
@@ -25,21 +28,57 @@ const PERFIL_COR: Record<string, string> = {
   reconhecido: 'text-blue-400 bg-blue-500/10 border-blue-500/30',
   referencia: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30',
 };
-
 const PERFIL_LABEL: Record<string, string> = {
-  invisivel: 'Invisível',
-  executor: 'Executor',
-  reconhecido: 'Reconhecido',
-  referencia: 'Referência',
+  invisivel: 'Invisível', executor: 'Executor', reconhecido: 'Reconhecido', referencia: 'Referência',
+};
+const PERFIL_BAR: Record<string, string> = {
+  invisivel: 'bg-red-500', executor: 'bg-orange-500', reconhecido: 'bg-blue-500', referencia: 'bg-emerald-500',
 };
 
-function Barra({ valor, cor }: { valor: number; cor: string }) {
+function contarOpcoes(dados: Registro[], campo: 'desafio' | 'objetivo' | 'preocupacao') {
+  const mapa: Record<string, number> = {};
+  dados.forEach(r => {
+    (r[campo] ?? []).forEach((op: string) => {
+      mapa[op] = (mapa[op] ?? 0) + 1;
+    });
+  });
+  return Object.entries(mapa).sort((a, b) => b[1] - a[1]);
+}
+
+function contarCampo(dados: Registro[], campo: keyof Registro) {
+  const mapa: Record<string, number> = {};
+  dados.forEach(r => {
+    const val = String(r[campo] ?? 'Não informado');
+    mapa[val] = (mapa[val] ?? 0) + 1;
+  });
+  return Object.entries(mapa).sort((a, b) => b[1] - a[1]);
+}
+
+function Barra({ valor, max, cor, label, qtd }: { valor: number; max: number; cor: string; label: string; qtd: number }) {
+  const pct = max > 0 ? (valor / max) * 100 : 0;
   return (
-    <div className="flex items-center gap-2">
-      <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+    <div className="space-y-1">
+      <div className="flex justify-between text-xs">
+        <span className="text-slate-300 truncate max-w-[80%]">{label}</span>
+        <span className="text-slate-400 ml-2 flex-shrink-0">{qtd}</span>
+      </div>
+      <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+        <div className={`h-full rounded-full ${cor} transition-all duration-500`} style={{ width: `${pct}%` }} />
+      </div>
+    </div>
+  );
+}
+
+function DimBarra({ label, valor, cor }: { label: string; valor: number; cor: string }) {
+  return (
+    <div className="space-y-1">
+      <div className="flex justify-between text-xs">
+        <span className="text-slate-300">{label}</span>
+        <span className="text-slate-400">{valor}%</span>
+      </div>
+      <div className="h-2 bg-white/10 rounded-full overflow-hidden">
         <div className={`h-full rounded-full ${cor}`} style={{ width: `${valor}%` }} />
       </div>
-      <span className="text-xs text-slate-400 w-8 text-right">{valor}%</span>
     </div>
   );
 }
@@ -54,6 +93,25 @@ function Card({ label, valor, sub }: { label: string; valor: string | number; su
   );
 }
 
+function SecaoExtras({ titulo, dados, campo, cor }: { titulo: string; dados: Registro[]; campo: 'desafio' | 'objetivo' | 'preocupacao'; cor: string }) {
+  const opcoes = contarOpcoes(dados, campo);
+  const max = opcoes[0]?.[1] ?? 1;
+  return (
+    <div className="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-4">
+      <h2 className="text-white font-bold text-sm uppercase tracking-wider">{titulo}</h2>
+      {opcoes.length === 0 ? (
+        <p className="text-slate-500 text-sm">Sem dados ainda</p>
+      ) : (
+        <div className="space-y-3">
+          {opcoes.map(([label, qtd]) => (
+            <Barra key={label} label={label} valor={qtd} max={max} qtd={qtd} cor={cor} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function AdminPage() {
   const [senha, setSenha] = useState('');
   const [autenticado, setAutenticado] = useState(false);
@@ -61,34 +119,32 @@ export default function AdminPage() {
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState('');
   const [ultimaAtt, setUltimaAtt] = useState('');
+  const [senhaLocal, setSenhaLocal] = useState('');
 
   const buscarDados = useCallback(async (secret: string) => {
     setCarregando(true);
     try {
       const res = await fetch(`/api/dados?secret=${secret}`);
       if (!res.ok) { setErro('Senha incorreta'); setAutenticado(false); return; }
-      const json = await res.json();
-      setDados(json);
+      setDados(await res.json());
       setUltimaAtt(new Date().toLocaleTimeString('pt-BR'));
       setErro('');
-    } catch {
-      setErro('Erro ao carregar dados');
-    } finally {
-      setCarregando(false);
-    }
+    } catch { setErro('Erro ao carregar dados'); }
+    finally { setCarregando(false); }
   }, []);
 
   function entrar() {
     if (!senha) return;
+    setSenhaLocal(senha);
     setAutenticado(true);
     buscarDados(senha);
   }
 
   useEffect(() => {
     if (!autenticado) return;
-    const interval = setInterval(() => buscarDados(senha), 30000);
+    const interval = setInterval(() => buscarDados(senhaLocal), 30000);
     return () => clearInterval(interval);
-  }, [autenticado, senha, buscarDados]);
+  }, [autenticado, senhaLocal, buscarDados]);
 
   if (!autenticado) {
     return (
@@ -108,10 +164,7 @@ export default function AdminPage() {
               className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
             />
             {erro && <p className="text-red-400 text-sm">{erro}</p>}
-            <button
-              onClick={entrar}
-              className="w-full bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold py-3 rounded-xl transition-colors"
-            >
+            <button onClick={entrar} className="w-full bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold py-3 rounded-xl transition-colors">
               Entrar
             </button>
           </div>
@@ -120,7 +173,6 @@ export default function AdminPage() {
     );
   }
 
-  // Métricas
   const total = dados.length;
   const mediaPontuacao = total ? Math.round(dados.reduce((a, r) => a + r.pontuacao, 0) / total) : 0;
   const mediaVis = total ? Math.round(dados.reduce((a, r) => a + r.visibilidade, 0) / total) : 0;
@@ -129,14 +181,12 @@ export default function AdminPage() {
   const mediaRel = total ? Math.round(dados.reduce((a, r) => a + r.relacionamento, 0) / total) : 0;
 
   const porPerfil = ['invisivel', 'executor', 'reconhecido', 'referencia'].map(p => ({
-    perfil: p,
-    qtd: dados.filter(r => r.perfil === p).length,
+    perfil: p, qtd: dados.filter(r => r.perfil === p).length,
   }));
-
-  const porOrigem = [
-    { label: 'Quiz 1', qtd: dados.filter(r => r.origem === 'quiz1').length },
-    { label: 'Quiz 2', qtd: dados.filter(r => r.origem === 'quiz2').length },
-  ];
+  const porCargo = contarCampo(dados, 'cargo');
+  const porEmpresa = contarCampo(dados, 'empresa_tamanho');
+  const maxCargo = porCargo[0]?.[1] ?? 1;
+  const maxEmpresa = porEmpresa[0]?.[1] ?? 1;
 
   return (
     <main className="min-h-screen bg-[#0d1117] px-4 py-8">
@@ -146,75 +196,85 @@ export default function AdminPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-black text-white">Painel Admin</h1>
-            <p className="text-slate-500 text-sm">Atualiza automaticamente a cada 30s · Última: {ultimaAtt}</p>
+            <p className="text-slate-500 text-sm">Atualiza a cada 30s · Última: {ultimaAtt}</p>
           </div>
-          <button
-            onClick={() => buscarDados(senha)}
-            disabled={carregando}
-            className="bg-white/10 hover:bg-white/20 text-white text-sm px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
-          >
+          <button onClick={() => buscarDados(senhaLocal)} disabled={carregando}
+            className="bg-white/10 hover:bg-white/20 text-white text-sm px-4 py-2 rounded-lg transition-colors disabled:opacity-50">
             {carregando ? 'Atualizando...' : '↻ Atualizar'}
           </button>
         </div>
 
-        {/* Cards métricas */}
+        {/* Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <Card label="Total de respostas" valor={total} />
           <Card label="Pontuação média" valor={`${mediaPontuacao}/75`} />
-          <Card label="Quiz 1" valor={porOrigem[0].qtd} sub="respostas" />
-          <Card label="Quiz 2" valor={porOrigem[1].qtd} sub="respostas" />
+          <Card label="Quiz 1" valor={dados.filter(r => r.origem === 'quiz1').length} sub="respostas" />
+          <Card label="Quiz 2" valor={dados.filter(r => r.origem === 'quiz2').length} sub="respostas" />
         </div>
 
+        {/* Perfis + Dimensões */}
         <div className="grid sm:grid-cols-2 gap-4">
-          {/* Perfis */}
           <div className="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-4">
             <h2 className="text-white font-bold text-sm uppercase tracking-wider">Distribuição de Perfis</h2>
             <div className="space-y-3">
               {porPerfil.map(({ perfil, qtd }) => (
-                <div key={perfil} className="flex items-center justify-between gap-3">
-                  <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${PERFIL_COR[perfil]}`}>
+                <div key={perfil} className="flex items-center gap-3">
+                  <span className={`text-xs font-bold px-2.5 py-1 rounded-full border w-24 text-center flex-shrink-0 ${PERFIL_COR[perfil]}`}>
                     {PERFIL_LABEL[perfil]}
                   </span>
                   <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full rounded-full ${perfil === 'invisivel' ? 'bg-red-500' : perfil === 'executor' ? 'bg-orange-500' : perfil === 'reconhecido' ? 'bg-blue-500' : 'bg-emerald-500'}`}
-                      style={{ width: total ? `${(qtd / total) * 100}%` : '0%' }}
-                    />
+                    <div className={`h-full rounded-full ${PERFIL_BAR[perfil]}`}
+                      style={{ width: total ? `${(qtd / total) * 100}%` : '0%' }} />
                   </div>
-                  <span className="text-white font-bold text-sm w-6 text-right">{qtd}</span>
+                  <span className="text-white font-bold text-sm w-5 text-right">{qtd}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Dimensões */}
           <div className="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-4">
             <h2 className="text-white font-bold text-sm uppercase tracking-wider">Média por Dimensão</h2>
             <div className="space-y-3">
-              <div className="space-y-1">
-                <span className="text-slate-300 text-sm">Visibilidade</span>
-                <Barra valor={mediaVis} cor="bg-amber-500" />
-              </div>
-              <div className="space-y-1">
-                <span className="text-slate-300 text-sm">Valor Percebido</span>
-                <Barra valor={mediaVal} cor="bg-blue-500" />
-              </div>
-              <div className="space-y-1">
-                <span className="text-slate-300 text-sm">Influência</span>
-                <Barra valor={mediaInf} cor="bg-purple-500" />
-              </div>
-              <div className="space-y-1">
-                <span className="text-slate-300 text-sm">Relacionamento</span>
-                <Barra valor={mediaRel} cor="bg-emerald-500" />
-              </div>
+              <DimBarra label="Visibilidade" valor={mediaVis} cor="bg-amber-500" />
+              <DimBarra label="Valor Percebido" valor={mediaVal} cor="bg-blue-500" />
+              <DimBarra label="Influência" valor={mediaInf} cor="bg-purple-500" />
+              <DimBarra label="Relacionamento" valor={mediaRel} cor="bg-emerald-500" />
             </div>
           </div>
         </div>
 
+        {/* Cargo + Empresa */}
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-4">
+            <h2 className="text-white font-bold text-sm uppercase tracking-wider">Por Cargo</h2>
+            <div className="space-y-3">
+              {porCargo.length === 0 ? <p className="text-slate-500 text-sm">Sem dados</p> :
+                porCargo.map(([label, qtd]) => (
+                  <Barra key={label} label={label} valor={qtd} max={maxCargo} qtd={qtd} cor="bg-amber-500" />
+                ))}
+            </div>
+          </div>
+
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-4">
+            <h2 className="text-white font-bold text-sm uppercase tracking-wider">Por Tamanho de Empresa</h2>
+            <div className="space-y-3">
+              {porEmpresa.length === 0 ? <p className="text-slate-500 text-sm">Sem dados</p> :
+                porEmpresa.map(([label, qtd]) => (
+                  <Barra key={label} label={label} valor={qtd} max={maxEmpresa} qtd={qtd} cor="bg-blue-500" />
+                ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Extras */}
+        <SecaoExtras titulo="Maiores Desafios" dados={dados} campo="desafio" cor="bg-red-500" />
+        <SecaoExtras titulo="Objetivos para os Próximos 12 Meses" dados={dados} campo="objetivo" cor="bg-emerald-500" />
+        <SecaoExtras titulo="Principais Preocupações" dados={dados} campo="preocupacao" cor="bg-purple-500" />
+
         {/* Tabela */}
         <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
           <div className="p-5 border-b border-white/10">
-            <h2 className="text-white font-bold">Respostas ({total})</h2>
+            <h2 className="text-white font-bold">Todas as Respostas ({total})</h2>
           </div>
           {total === 0 ? (
             <div className="p-10 text-center text-slate-500">Nenhuma resposta ainda</div>
@@ -223,7 +283,7 @@ export default function AdminPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-white/10">
-                    {['Nome', 'Cargo', 'Email', 'Telefone', 'Pontos', 'Perfil', 'Origem', 'Data'].map(h => (
+                    {['Nome','Cargo','Email','Telefone','Empresa','Pontos','Perfil','Origem','Data'].map(h => (
                       <th key={h} className="text-left px-4 py-3 text-slate-400 font-medium text-xs uppercase tracking-wider whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
@@ -235,6 +295,7 @@ export default function AdminPage() {
                       <td className="px-4 py-3 text-slate-300 whitespace-nowrap">{r.cargo || '—'}</td>
                       <td className="px-4 py-3 text-slate-400 whitespace-nowrap">{r.email || '—'}</td>
                       <td className="px-4 py-3 text-slate-400 whitespace-nowrap">{r.telefone || '—'}</td>
+                      <td className="px-4 py-3 text-slate-400 whitespace-nowrap">{r.empresa_tamanho || '—'}</td>
                       <td className="px-4 py-3 text-amber-400 font-bold">{r.pontuacao}</td>
                       <td className="px-4 py-3">
                         <span className={`text-xs font-bold px-2 py-1 rounded-full border ${PERFIL_COR[r.perfil]}`}>

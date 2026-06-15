@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
     SELECT id, nome, email, telefone, cargo, empresa_tamanho,
            pontuacao, perfil, visibilidade, valor_percebido,
            influencia, relacionamento, origem,
+           desafio, objetivo, preocupacao,
            to_char(criado_em AT TIME ZONE 'America/Sao_Paulo', 'DD/MM/YYYY HH24:MI') as data
     FROM resultados_quiz
     ORDER BY criado_em DESC
