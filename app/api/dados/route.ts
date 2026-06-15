@@ -3,7 +3,8 @@ import { getDb } from '@/lib/db';
 
 export async function GET(req: NextRequest) {
   const secret = req.nextUrl.searchParams.get('secret');
-  if (secret !== process.env.API_SECRET) {
+  const senhaCorreta = process.env.API_SECRET || 'lucas2024quiz';
+  if (secret !== senhaCorreta) {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
   }
 
