@@ -112,6 +112,43 @@ function SecaoExtras({ titulo, dados, campo, cor }: { titulo: string; dados: Reg
   );
 }
 
+function exportarCSV(dados: Registro[]) {
+  const cabecalho = [
+    'ID', 'Nome', 'Email', 'Telefone', 'Cargo', 'Empresa', 'Pontuação', 'Perfil',
+    'Visibilidade', 'Valor Percebido', 'Influência', 'Relacionamento',
+    'Origem', 'Desafios', 'Objetivos', 'Preocupações', 'Data',
+  ];
+
+  const linhas = dados.map(r => [
+    r.id,
+    r.nome,
+    r.email,
+    r.telefone,
+    r.cargo,
+    r.empresa_tamanho,
+    r.pontuacao,
+    PERFIL_LABEL[r.perfil] ?? r.perfil,
+    r.visibilidade,
+    r.valor_percebido,
+    r.influencia,
+    r.relacionamento,
+    r.origem === 'quiz2' ? 'Quiz 2' : 'Quiz 1',
+    (r.desafio ?? []).join(' | '),
+    (r.objetivo ?? []).join(' | '),
+    (r.preocupacao ?? []).join(' | '),
+    r.data,
+  ].map(v => `"${String(v ?? '').replace(/"/g, '""')}"`));
+
+  const csv = '﻿' + [cabecalho.join(';'), ...linhas.map(l => l.join(';'))].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `diagnostico_${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export default function AdminPage() {
   const [senha, setSenha] = useState('');
   const [autenticado, setAutenticado] = useState(false);
@@ -287,10 +324,16 @@ export default function AdminPage() {
             <h1 className="text-2xl font-black text-white">Painel Admin</h1>
             <p className="text-slate-500 text-sm">Atualiza a cada 30s · Última: {ultimaAtt}</p>
           </div>
-          <button onClick={() => buscarDados(senhaLocal)} disabled={carregando}
-            className="bg-white/10 hover:bg-white/20 text-white text-sm px-4 py-2 rounded-lg transition-colors disabled:opacity-50">
-            {carregando ? 'Atualizando...' : '↻ Atualizar'}
-          </button>
+          <div className="flex gap-2">
+            <button onClick={() => exportarCSV(dados)} disabled={total === 0}
+              className="bg-emerald-600 hover:bg-emerald-500 text-white text-sm px-4 py-2 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+              ↓ Exportar Excel
+            </button>
+            <button onClick={() => buscarDados(senhaLocal)} disabled={carregando}
+              className="bg-white/10 hover:bg-white/20 text-white text-sm px-4 py-2 rounded-lg transition-colors disabled:opacity-50">
+              {carregando ? 'Atualizando...' : '↻ Atualizar'}
+            </button>
+          </div>
         </div>
 
         {/* Cards */}
