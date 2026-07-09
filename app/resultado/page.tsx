@@ -165,42 +165,22 @@ export default function ResultadoPage() {
           <div className="flex-1 h-px bg-white/10" />
         </div>
 
-        {/* Ebook 1 */}
-        <div className="bg-white/3 border border-white/8 rounded-3xl p-5 flex gap-5 items-center hover:border-blue-500/30 transition-colors">
-          <Image src="/feedback.jpg" alt="Feedback que Transforma" width={90} height={116} className="rounded-2xl object-cover flex-shrink-0 shadow-xl" />
-          <div className="flex-1 space-y-3">
-            <div>
-              <p className="text-blue-400 text-xs font-bold uppercase tracking-wider">EBOOK</p>
-              <h3 className="text-white font-bold text-lg leading-tight">Feedback que Transforma</h3>
-              <p className="text-slate-400 text-sm mt-1 leading-snug">Aprenda a dar e receber feedbacks que mudam comportamentos e aceleram sua carreira.</p>
-            </div>
-            <a
-              href="https://pay.kiwify.com.br/e5gogMi"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold px-5 py-2.5 rounded-xl transition-colors text-sm shadow-lg shadow-blue-500/20"
-            >
-              Adquirir agora →
-            </a>
-          </div>
-        </div>
-
-        {/* Ebook 2 */}
+        {/* Protocolo do Funcionário Valorizado */}
         <div className="bg-white/3 border border-white/8 rounded-3xl p-5 flex gap-5 items-center hover:border-amber-500/30 transition-colors">
-          <Image src="/lider10x.png" alt="Líder 10X" width={90} height={116} className="rounded-2xl object-cover flex-shrink-0 shadow-xl" />
+          <Image src="/lucas-terno.png" alt="Protocolo do Funcionário Valorizado" width={90} height={116} className="rounded-2xl object-cover flex-shrink-0 shadow-xl" />
           <div className="flex-1 space-y-3">
             <div>
-              <p className="text-amber-400 text-xs font-bold uppercase tracking-wider">EBOOK</p>
-              <h3 className="text-white font-bold text-lg leading-tight">Líder 10X</h3>
-              <p className="text-slate-400 text-sm mt-1 leading-snug">O guia para multiplicar sua liderança e reconhecimento dentro da empresa em 90 dias.</p>
+              <p className="text-amber-400 text-xs font-bold uppercase tracking-wider">CURSO</p>
+              <h3 className="text-white font-bold text-lg leading-tight">Protocolo do Funcionário Valorizado</h3>
+              <p className="text-slate-400 text-sm mt-1 leading-snug">O passo a passo pra sair da invisibilidade, ser reconhecido e ganhar o que você merece.</p>
             </div>
             <a
-              href="https://pay.kiwify.com.br/nzi1kns"
+              href="https://3sprodutividade.com.br/protocolo-reconhecimento"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold px-5 py-2.5 rounded-xl transition-colors text-sm shadow-lg shadow-amber-500/20"
             >
-              Adquirir agora →
+              Quero acessar →
             </a>
           </div>
         </div>
