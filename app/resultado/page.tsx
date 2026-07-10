@@ -58,20 +58,25 @@ function labelNivel(v: number) {
   return { txt: 'Crítico', cor: 'text-red-400' };
 }
 
+const CARGOS_LIDERANCA = ['Diretor / Gerente', 'Supervisor / Coordenador'];
+
 export default function ResultadoPage() {
   const router = useRouter();
   const [resultado, setResultado] = useState<ResultadoQuiz | null>(null);
+  const [cargo, setCargo] = useState<string>('');
 
   useEffect(() => {
     const data = sessionStorage.getItem('resultado');
     if (!data) { router.push('/quiz'); return; }
     setResultado(JSON.parse(data));
+    setCargo(sessionStorage.getItem('cargo') ?? '');
   }, [router]);
 
   if (!resultado) return null;
 
   const p = PERFIS[resultado.perfil];
   const pct = Math.round((resultado.pontuacao / 75) * 100);
+  const isLideranca = CARGOS_LIDERANCA.includes(cargo);
 
   return (
     <main className="min-h-screen bg-[#0d1117] px-4 py-10">
@@ -165,25 +170,47 @@ export default function ResultadoPage() {
           <div className="flex-1 h-px bg-white/10" />
         </div>
 
-        {/* Protocolo do Funcionário Valorizado */}
-        <div className="bg-white/3 border border-white/8 rounded-3xl p-5 flex gap-5 items-center hover:border-amber-500/30 transition-colors">
-          <Image src="/lucas-terno.png" alt="Protocolo do Funcionário Valorizado" width={90} height={116} className="rounded-2xl object-cover flex-shrink-0 shadow-xl" />
-          <div className="flex-1 space-y-3">
-            <div>
-              <p className="text-amber-400 text-xs font-bold uppercase tracking-wider">CURSO</p>
-              <h3 className="text-white font-bold text-lg leading-tight">Protocolo do Funcionário Valorizado</h3>
-              <p className="text-slate-400 text-sm mt-1 leading-snug">O passo a passo pra sair da invisibilidade, ser reconhecido e ganhar o que você merece.</p>
+        {isLideranca ? (
+          /* Sessão Estratégica Individual (Diretor/Gerente e Supervisor/Coordenador) */
+          <div className="bg-white/3 border border-white/8 rounded-3xl p-5 flex gap-5 items-center hover:border-amber-500/30 transition-colors">
+            <Image src="/lucas-terno.png" alt="Sessão Estratégica Individual" width={90} height={116} className="rounded-2xl object-cover flex-shrink-0 shadow-xl" />
+            <div className="flex-1 space-y-3">
+              <div>
+                <p className="text-amber-400 text-xs font-bold uppercase tracking-wider">SESSÃO INDIVIDUAL</p>
+                <h3 className="text-white font-bold text-lg leading-tight">Sessão Estratégica Individual</h3>
+                <p className="text-slate-400 text-sm mt-1 leading-snug">Uma conversa 1:1 pra analisar seu diagnóstico e montar seu plano de reconhecimento. Por R$29,90.</p>
+              </div>
+              <a
+                href="https://pay.kiwify.com.br/taFoXTZ"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold px-5 py-2.5 rounded-xl transition-colors text-sm shadow-lg shadow-amber-500/20"
+              >
+                Quero minha sessão →
+              </a>
             </div>
-            <a
-              href="https://3sprodutividade.com.br/protocolo-reconhecimento"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold px-5 py-2.5 rounded-xl transition-colors text-sm shadow-lg shadow-amber-500/20"
-            >
-              Quero acessar →
-            </a>
           </div>
-        </div>
+        ) : (
+          /* Protocolo do Funcionário Valorizado */
+          <div className="bg-white/3 border border-white/8 rounded-3xl p-5 flex gap-5 items-center hover:border-amber-500/30 transition-colors">
+            <Image src="/lucas-terno.png" alt="Protocolo do Funcionário Valorizado" width={90} height={116} className="rounded-2xl object-cover flex-shrink-0 shadow-xl" />
+            <div className="flex-1 space-y-3">
+              <div>
+                <p className="text-amber-400 text-xs font-bold uppercase tracking-wider">CURSO</p>
+                <h3 className="text-white font-bold text-lg leading-tight">Protocolo do Funcionário Valorizado</h3>
+                <p className="text-slate-400 text-sm mt-1 leading-snug">O passo a passo pra sair da invisibilidade, ser reconhecido e ganhar o que você merece.</p>
+              </div>
+              <a
+                href="https://3sprodutividade.com.br/protocolo-reconhecimento"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold px-5 py-2.5 rounded-xl transition-colors text-sm shadow-lg shadow-amber-500/20"
+              >
+                Quero acessar →
+              </a>
+            </div>
+          </div>
+        )}
 
         {/* Refazer */}
         <div className="text-center pb-4">

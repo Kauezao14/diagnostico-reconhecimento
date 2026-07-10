@@ -108,6 +108,7 @@ export default function QuizPage() {
     setEnviando(true);
     const resultado = calcularResultado(respostas);
     sessionStorage.setItem('resultado', JSON.stringify(resultado));
+    sessionStorage.setItem('cargo', cargo);
     router.push('/resultado');
 
     fetch('/api/submit', {
