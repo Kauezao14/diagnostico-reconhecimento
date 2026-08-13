@@ -162,7 +162,12 @@ export default function AdminPage() {
   const buscarDados = useCallback(async (secret: string) => {
     setCarregando(true);
     try {
-      const res = await fetch(`/api/dados?secret=${secret}`);
+      const res = await fetch('/api/dados', {
+        headers: {
+          Authorization: `Bearer ${secret}`,
+        },
+        cache: 'no-store',
+      });
       if (!res.ok) { setErro('Senha incorreta'); setAutenticado(false); return; }
       setDados(await res.json());
       setUltimaAtt(new Date().toLocaleTimeString('pt-BR'));

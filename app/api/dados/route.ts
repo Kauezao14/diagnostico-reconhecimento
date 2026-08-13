@@ -2,9 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 
 export async function GET(req: NextRequest) {
-  const secret = req.nextUrl.searchParams.get('secret');
-  const senhaCorreta = process.env.API_SECRET || 'lucas2024quiz';
-  if (secret !== senhaCorreta) {
+  const apiSecret = process.env.API_SECRET;
+  if (!apiSecret) {
+    console.error('API_SECRET não configurado.');
+    return NextResponse.json({ error: 'Serviço indisponível' }, { status: 503 });
+  }
+
+  const authorization = req.headers.get('authorization');
+  if (authorization !== `Bearer ${apiSecret}`) {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
   }
 
@@ -19,5 +24,9 @@ export async function GET(req: NextRequest) {
     ORDER BY criado_em DESC
   `;
 
-  return NextResponse.json(rows);
+  return NextResponse.json(rows, {
+    headers: {
+      'Cache-Control': 'no-store',
+    },
+  });
 }
